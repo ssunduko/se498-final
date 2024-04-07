@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<div th:fragment="header-css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <!-- Design idea -->
+    <!--    <link rel="stylesheet" type="text/css" href="css/chat.min.css" /> -->
+</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, participant-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://randojs.com/1.0.0.js"></script>
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+
+        #myImg {
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #myImg:hover {opacity: 0.7;}
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+        }
+
+        /* Modal Content (image) */
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        /* Caption of Modal Image */
+        #caption {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+            height: 150px;
+        }
+
+        /* Add Animation */
+        .modal-content, #caption {
+            -webkit-animation-name: zoom;
+            -webkit-animation-duration: 0.6s;
+            animation-name: zoom;
+            animation-duration: 0.6s;
+        }
+
+        @-webkit-keyframes zoom {
+            from {-webkit-transform:scale(0)}
+            to {-webkit-transform:scale(1)}
+        }
+
+        @keyframes zoom {
+            from {transform:scale(0)}
+            to {transform:scale(1)}
+        }
+
+        /* The Close Button */
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 100% Image Width on Smaller Screens */
+        @media only screen and (max-width: 700px){
+            .modal-content {
+                width: 100%;
+            }
+        }
+    </style>
+    <title>Cognitive Behaviour Therapy (CBT) Chat</title>
+</head>
+<body>
+
+<div class="container">
+    <p><strong>Welcome to a Cognitive Behaviour Therapy (CBT) Chat !!!</strong></p>
+    <div class="row">
+        <div class="col-8">
+            <form action="#" method="POST" th:action="@{/chat}" th:object="${chatMessageDTO}">
+                <label for="messageText">Message Text:</label>
+                <input id="messageText" th:field="*{messageText}" type="text">
+                <label for="messageType">Message Type: </label>
+                <select id="messageType" th:field="*{messageType}">
+                    <option
+                            th:each="type : ${allMessageTypes}"
+                            th:text="${type}"
+                            th:value="${type}"
+                    >
+                        Say
+                    </option>
+                </select>
+                <input id="submit-button" type="submit">
+            </form>
+        </div>
+        <div class="col-4">
+            <a id="logout-link" th:href="@{/logout}">Logout</a>
+        </div>
+    </div>
+</div>
+<br/>
+<div class="container">
+    <em>Messages</em>
+    <div th:each="chatMessage : ${chatMessages}">
+        <span class="chatMessageUsername" th:text="${chatMessage.username}"><b>Username</b></span>: <span
+            class="chatMessageText"
+            th:text="${chatMessage.messageText}">Hello, world!</span>
+    </div>
+</div>
+<div class="container">
+    <div>
+        <em>Images</em>
+        <div th:each="image : ${chatImages}">
+            <a href="javascript:void(0);"
+               th:onclick="'openModal(\'' + @{${image.url}} + '\');'"><span th:text="${image.description}"></span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="myModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="img01">
+    </div>
+
+    <script>
+        function openModal(src) {
+            var modal = document.getElementById('myModal');
+            var modalImg = document.getElementById("img01");
+            modal.style.display = "block";
+            modalImg.src = src;
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</div>
+</body>
+</html>
