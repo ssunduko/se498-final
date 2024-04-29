@@ -23,3 +23,4 @@
 
 ### Authors
 - [Sergey Sundukovskiy, Ph.D.](https://github.com/ssunduko)
+- [ssunduko@gmail.com](mailto:ssunduko@gmail.com?subject=se498)
