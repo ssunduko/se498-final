@@ -1,23 +1,21 @@
 package com.se498.chat.page;
 
 import com.se498.chat.TestChatApplication;
-import com.se498.chat.model.ChatMessage;
-import com.se498.chat.page.ChatPage;
-import com.se498.chat.page.LoginPage;
-import com.se498.chat.page.SignUpPage;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import java.io.IOException;
+import java.io.File;
+import java.time.Duration;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {TestChatApplication.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -30,11 +28,10 @@ class ChatApplicationTests {
 
     @BeforeAll
     public static void beforeAll() {
-        System.setProperty("webdriver.gecko.driver", "C:\\geckodriver.exe");
-        System.setProperty("webdriver.firefox.bin","C:\\Program Files\\Mozilla Firefox\\firefox.exe");
-        FirefoxOptions options = new FirefoxOptions();
-        options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
-        driver = new FirefoxDriver(options);
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        //options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
+        driver = new ChromeDriver(options);
     }
 
     @AfterAll
@@ -49,26 +46,56 @@ class ChatApplicationTests {
     }
 
     @Test
-    public void testUserSignupLoginAndSubmitMessage() {
+    public void testUserSignupLoginAndSubmitMessage() throws IOException, InterruptedException {
         String username = "username1";
         String password = "password1";
         String messageText = "Hello!";
 
+        TakesScreenshot screenshot;
+        File source;
+
         driver.get(baseURL + "/signup");
+        screenshot = (TakesScreenshot)driver;
+        source = screenshot.getScreenshotAs(OutputType.FILE);
+        FileUtils.copyFile(source, new File("./DTAScreenshots/Signup.png"));
 
         SignUpPage signupPage = new SignUpPage(driver);
         signupPage.signUp("Participant", "1", username, password);
 
         driver.get(baseURL + "/login");
+        screenshot = (TakesScreenshot)driver;
+        source = screenshot.getScreenshotAs(OutputType.FILE);
+        FileUtils.copyFile(source, new File("./DTAScreenshots/Login.png"));
 
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login(username, password);
 
+        driver.get(baseURL + "/chat");
+
+        screenshot = (TakesScreenshot)driver;
+        source = screenshot.getScreenshotAs(OutputType.FILE);
+        FileUtils.copyFile(source, new File("./DTAScreenshots/Chat.png"));
+
         ChatPage chatPage = new ChatPage(driver);
         chatPage.sendChatMessage(messageText);
 
+        /*WebElement revealed = driver.findElement(By.id("img01"));
+
+        Wait<WebDriver> wait =
+                new FluentWait<>(driver)
+                        .withTimeout(Duration.ofSeconds(2))
+                        .pollingEvery(Duration.ofMillis(300))
+                        .ignoring(ElementNotInteractableException.class);
+
+        wait.until(
+                d -> {
+                    revealed.sendKeys("How I feel");
+                    return true;
+                });*/
+
         chatPage.logout();
 
+        driver.quit();
     }
 
 }

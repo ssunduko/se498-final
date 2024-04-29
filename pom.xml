@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from relational -->
 	</parent>
 	<groupId>com.se498</groupId>
-	<artifactId>se498-assignment3</artifactId>
+	<artifactId>se498-final</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>final</name>
 	<description>final</description>
@@ -221,6 +221,18 @@
 			<artifactId>langchain4j</artifactId>
 			<version>0.25.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.codeborne</groupId>
+			<artifactId>selenide</artifactId>
+			<version>5.23.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.qameta.allure</groupId>
+			<artifactId>allure-selenide</artifactId>
+			<version>2.14.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -249,7 +261,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.3.4.RELEASE</version>
 				<configuration>
-					<mainClass>com.se300.ledger.SmartStoreApplication</mainClass>
+					<mainClass>com.se498.chat.ChatApplication</mainClass>
 					<layout>JAR</layout>
 				</configuration>
 				<executions>

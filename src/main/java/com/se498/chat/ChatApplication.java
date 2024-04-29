@@ -1,6 +1,8 @@
 package com.se498.chat;
 
 import com.se498.chat.model.ChatMessage;
+import com.se498.chat.model.Image;
+import com.se498.chat.repository.ImageRepository;
 import com.se498.chat.repository.MessageRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
