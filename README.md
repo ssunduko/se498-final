@@ -20,3 +20,6 @@
 -->
 
 ## This is a final project for SE498
+
+### Authors
+- [Sergey Sundukovskiy, Ph.D.](https://github.com/ssunduko)
