@@ -64,8 +64,6 @@ jobs:
           command: |
             pwd
             ls -lah
-            hostname -a
             whoami
-
           
         
