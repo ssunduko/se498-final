@@ -52,6 +52,8 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME}
-          cd /home/centos/se498-final
+          pwd
+          ls
+          cd /home/${USER_NAME}/se498-final
           sudo nohup mvn exec:java -Dexec.mainClass=com.se498.chat.ChatApplication > nohup.out &
         
