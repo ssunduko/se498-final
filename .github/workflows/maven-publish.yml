@@ -51,4 +51,5 @@ jobs:
           USER_NAME: ${{ secrets.USER_NAME  }}
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
+          sudo mvn compile
           sudo nohup mvn exec:java -Dexec.mainClass=com.se498.chat.ChatApplication
