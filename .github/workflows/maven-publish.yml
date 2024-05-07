@@ -51,5 +51,12 @@ jobs:
           USER_NAME: ${{ secrets.USER_NAME  }}
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
-          sudo mvn compile
-          sudo nohup mvn exec:java -Dexec.mainClass=com.se498.chat.ChatApplication
+      - name: Pull Docker Image
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ssunduko/cbt-service:latest
+          options: -v ${{ github.workspace }}:/var/www
+          run: |
+              composer install
+              npm install
+              npm run production
