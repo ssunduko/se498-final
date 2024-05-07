@@ -53,5 +53,7 @@ jobs:
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
               docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+              sudo chmod 666 /var/run/docker.sock
+              sudo systemctl restart docker.service
               docker run -d -p 8080:8080 ssunduko/cbt-service:latest
           '
