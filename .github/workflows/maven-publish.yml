@@ -52,9 +52,10 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
       - name: Pull Docker Image
-        uses: addnab/docker-run-action@v3
+        uses: appleboy/ssh-action@master
         with:
-          image: ssunduko/cbt-service:latest
-          options: -v ${{ github.workspace }}:/var/www
-          run: |
-              echo "hello world"
+          host: ${{ secrets.HOSTNAME  }}
+          username: ${{ secrets.HOSTNAME  }}
+          key: ${{ secrets.AWS_PRIVATE_KEY  }}
+          script: |
+              docker run -d -p 8080:8080 ssunduko/cbt-service:latest
