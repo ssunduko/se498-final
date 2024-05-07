@@ -51,12 +51,6 @@ jobs:
           USER_NAME: ${{ secrets.USER_NAME  }}
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
-      - name: Pull Docker Image
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOSTNAME  }}
-          username: ${{ secrets.HOSTNAME  }}
-          key: ${{ secrets.AWS_PRIVATE_KEY  }}
-          script: |
-              pwd
-              ls
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
+              docker run -d -p 8080:8080 ssunduko/cbt-service:latest
+          '
