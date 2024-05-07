@@ -58,5 +58,5 @@ jobs:
           username: ${{ secrets.HOSTNAME  }}
           key: ${{ secrets.AWS_PRIVATE_KEY  }}
           script: |
-              docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-              docker run -d -p 8080:8080 ssunduko/cbt-service:latest
+              pwd
+              ls
