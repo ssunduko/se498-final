@@ -57,6 +57,4 @@ jobs:
           image: ssunduko/cbt-service:latest
           options: -v ${{ github.workspace }}:/var/www
           run: |
-              composer install
-              npm install
-              npm run production
+              docker run -d -p 8080:8080 ssunduko/cbt-service:latest
