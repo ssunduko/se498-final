@@ -51,19 +51,6 @@ jobs:
           USER_NAME: ${{ secrets.USER_NAME  }}
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
-      - name: Execute SSH commmands on remote server
-        uses: JimCronqvist/action-ssh@master
-        env:
-          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
-          HOSTNAME: ${{ secrets.HOSTNAME  }}
-          USER_NAME: ${{ secrets.USER_NAME  }}
-        with:
-          hosts: '${USER_NAME}@${HOSTNAME}'
-          privateKey: '$PRIVATE_KEY'
-          debug: true
-          command: |
-            pwd
-            ls -lah
-            whoami
-          
+          ls
+          pwd
         
