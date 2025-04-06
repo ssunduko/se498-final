@@ -1,15 +1,12 @@
 package com.se498.chat;
 
 import com.se498.chat.model.ChatMessage;
-import com.se498.chat.model.Image;
-import com.se498.chat.repository.ImageRepository;
 import com.se498.chat.repository.MessageRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
-
 
 import java.util.UUID;
 
@@ -29,6 +26,7 @@ public class ChatApplication {
 			ChatMessage dummy = service.save(new ChatMessage(UUID.randomUUID().toString(), "test", "testing", 111111));
 
 			System.out.println("This is a return Relational " + dummy.getMessageText());
+
 		};
 	}
 }

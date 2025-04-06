@@ -42,7 +42,9 @@ public class AIService {
 
     public String visualizeText(String description){
 
-        ImageModel model = OpenAiImageModel.withApiKey(openaiApiKey);
+        ImageModel model = OpenAiImageModel.builder()
+                .apiKey(openaiApiKey)
+                .build();
 
         Response<Image> image = model.generate(description + ",ultra realistic");
 

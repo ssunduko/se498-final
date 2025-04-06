@@ -1,176 +1,197 @@
 <!doctype html>
 <html lang="en">
-<div th:fragment="header-css">
-    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <!-- Design idea -->
-    <!--    <link rel="stylesheet" type="text/css" href="css/chat.min.css" /> -->
-</div>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, participant-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <script src="js/bootstrap.min.js"></script>
-    <script src="https://randojs.com/1.0.0.js"></script>
     <style>
-        body {font-family: Arial, Helvetica, sans-serif;}
-
-        #myImg {
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
+        body {
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        #myImg:hover {opacity: 0.7;}
+        .alert {
+            margin-top: 20px;
+        }
 
-        /* The Modal (background) */
-        .modal {
+        /* Fullscreen overlay for blocking input */
+        #overlay {
             display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            padding-top: 100px; /* Location of the box */
-            left: 0;
+            position: fixed;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+            z-index: 1000;
         }
 
-        /* Modal Content (image) */
+        /* Centered spinner */
+        #spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 12px solid #f3f3f3; /* Light grey */
+            border-top: 12px solid #007bff; /* Bootstrap primary blue */
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .row {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .message b {
+            color: #007bff;
+        }
+
+        .image img {
+            max-width: 150px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Modal for Image Display */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
         .modal-content {
             margin: auto;
             display: block;
-            width: 80%;
-            max-width: 700px;
+            max-width: 80%;
+            height: auto;
         }
 
-        /* Caption of Modal Image */
-        #caption {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-            text-align: center;
-            color: #ccc;
-            padding: 10px 0;
-            height: 150px;
-        }
-
-        /* Add Animation */
-        .modal-content, #caption {
-            -webkit-animation-name: zoom;
-            -webkit-animation-duration: 0.6s;
-            animation-name: zoom;
-            animation-duration: 0.6s;
-        }
-
-        @-webkit-keyframes zoom {
-            from {-webkit-transform:scale(0)}
-            to {-webkit-transform:scale(1)}
-        }
-
-        @keyframes zoom {
-            from {transform:scale(0)}
-            to {transform:scale(1)}
-        }
-
-        /* The Close Button */
         .close {
             position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
+            top: 10px;
+            right: 25px;
+            color: white;
+            font-size: 35px;
             font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #bbb;
-            text-decoration: none;
             cursor: pointer;
-        }
-
-        /* 100% Image Width on Smaller Screens */
-        @media only screen and (max-width: 700px){
-            .modal-content {
-                width: 100%;
-            }
         }
     </style>
     <title>Cognitive Behaviour Therapy (CBT) Chat</title>
 </head>
 <body>
 
+<!-- Fullscreen overlay -->
+<div id="overlay">
+    <div id="spinner"></div>
+</div>
+
 <div class="container">
-    <p><strong>Welcome to a Cognitive Behaviour Therapy (CBT) Chat !!!</strong></p>
-    <div class="row">
-        <div class="col-8">
-            <form action="#" method="POST" th:action="@{/chat}" th:object="${chatMessageDTO}">
-                <label for="messageText">Message Text:</label>
-                <input id="messageText" th:field="*{messageText}" type="text">
-                <label for="messageType">Message Type: </label>
-                <select id="messageType" th:field="*{messageType}">
-                    <option
-                            th:each="type : ${allMessageTypes}"
-                            th:text="${type}"
-                            th:value="${type}"
-                    >
-                        Say
-                    </option>
-                </select>
-                <input id="submit-button" type="submit">
-            </form>
+    <h1 class="text-center">Cognitive Behaviour Therapy (CBT) Chat</h1>
+
+    <!-- Error Alert -->
+    <div class="alert alert-danger" role="alert" th:if="${error}">
+        <p th:text="${errorMessage}">An unexpected error occurred. Please try again later.</p>
+    </div>
+
+    <form id="chat-form" action="#" method="POST" th:action="@{/chat}" th:object="${chatMessageDTO}">
+        <div class="form-group">
+            <label for="messageText"><strong>Message Text:</strong></label>
+            <input id="messageText" th:field="*{messageText}" type="text" class="form-control" required>
         </div>
-        <div class="col-4">
-            <a id="logout-link" th:href="@{/logout}">Logout</a>
+        <div class="form-group">
+            <label for="messageType"><strong>Message Type:</strong></label>
+            <select id="messageType" th:field="*{messageType}" class="form-control">
+                <option
+                        th:each="type : ${allMessageTypes}"
+                        th:text="${type}"
+                        th:value="${type}">
+                    Say
+                </option>
+            </select>
+        </div>
+        <button id="submit-button" type="submit" class="btn btn-primary btn-block">Send</button>
+    </form>
+
+    <a id="logout-link" th:href="@{/logout}" class="btn btn-secondary mt-3">Logout</a>
+
+    <div class="container mt-5">
+        <div class="row" th:each="chatMessage, iterStatus : ${chatMessages}">
+            <!-- Message Column -->
+            <div class="col-md-6 message">
+                <b th:text="${chatMessage.username}">Username</b>:
+                <span th:text="${chatMessage.messageText}">Hello, world!</span>
+            </div>
+
+            <!-- Image Column -->
+            <div class="col-md-6 image">
+                <img th:if="${chatImages[iterStatus.index] != null}"
+                     th:src="@{${chatImages[iterStatus.index].url}}"
+                     th:alt="${chatImages[iterStatus.index].description}"
+                     class="img-thumbnail"
+                     onclick="openModal(this.src)">
+                <p th:if="${chatImages[iterStatus.index] == null}" class="text-muted">No image available</p>
+            </div>
         </div>
     </div>
 </div>
-<br/>
-<div class="container">
-    <em>Messages</em>
-    <div th:each="chatMessage : ${chatMessages}">
-        <span class="chatMessageUsername" th:text="${chatMessage.username}"><b>Username</b></span>: <span
-            class="chatMessageText"
-            th:text="${chatMessage.messageText}">Hello, world!</span>
-    </div>
+
+<!-- Modal for Image Display -->
+<div id="imageModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
 </div>
-<div class="container">
-    <div>
-        <em>Images</em>
-        <div th:each="image : ${chatImages}">
-            <a href="javascript:void(0);"
-               th:onclick="'openModal(\'' + @{${image.url}} + '\');'"><span th:text="${image.description}"></span>
-            </a>
-        </div>
-    </div>
 
-    <!-- Modal Structure -->
-    <div id="myModal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="img01">
-    </div>
+<script>
+    const form = document.getElementById('chat-form');
+    const overlay = document.getElementById('overlay');
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
 
-    <script>
-        function openModal(src) {
-            var modal = document.getElementById('myModal');
-            var modalImg = document.getElementById("img01");
-            modal.style.display = "block";
-            modalImg.src = src;
+    // Show spinner on form submit
+    form.addEventListener('submit', function () {
+        overlay.style.display = 'block';
+    });
 
-            // Get the <span> element that closes the modal
-            var span = document.getElementsByClassName("close")[0];
+    // Hide spinner after page reload
+    window.addEventListener('load', function () {
+        overlay.style.display = 'none';
+    });
 
-            // When the user clicks on <span> (x), close the modal
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
-        }
-    </script>
-</div>
+    // Open the image modal
+    function openModal(src) {
+        modal.style.display = 'block';
+        modalImage.src = src;
+    }
+
+    // Close the image modal
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+</script>
 </body>
 </html>
