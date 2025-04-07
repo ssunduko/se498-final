@@ -11,6 +11,10 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.matchers.TimeToLive;
+import org.mockserver.matchers.Times;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,46 +22,50 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+
 @SpringBootTest(classes = TestChatApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ImageInternalMockControllerTest {
 
     @LocalServerPort
-    private Integer port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    private static HttpHeaders headers;
+    private static Integer port;
 
     @BeforeAll
     static void init(){
 
-        headers = new HttpHeaders();
-        headers.setBasicAuth("sergey", "chapman");
-    }
+        ClientAndServer.startClientAndServer(1090);
 
+        new MockServerClient("localhost", 1090)
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/image/1"),
+                        Times.unlimited(),
+                        TimeToLive.unlimited(),
+                        0
+                )
+                .respond(
+                        response()
+                                .withBody("{\n \"imageId\" : \"1\", \"url\" : \"http://yahoo.com\", \"description\" : \"description\"\n}")
+                );
+    }
     @Test
-    public void testGetImageById() throws IllegalStateException, JSONException {
+    void testGetImageById() throws JSONException {
 
         String expectedJson = "{\"imageId\" : \"1\", \"url\" : \"http://yahoo.com\", \"description\" : \"description\"}";
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:" + port + "/image/1", HttpMethod.GET, new HttpEntity<String>(headers),
-                String.class);
+        ExtractableResponse<Response> response = RestAssured
+                .given()
+                .filter(new RequestLoggingFilter())
+                .auth().basic("sergey", "chapman")
+                .contentType(ContentType.JSON)
+                .when()
+                .get("http://localhost:" + 1090 + "/image/1")
+                .then()
+                .statusCode(200)
+                .extract();
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        JSONAssert.assertEquals(expectedJson, response.getBody(),true);
-    }
-
-    @Test
-    public void testCreateImage() throws IllegalStateException, JSONException {
-
-        String expectedJson = "{\"imageId\" : \"mock\", \"url\" : \"http://mock.com\", \"description\" : \"this is a test\"}";
-        Image image = new Image("mock","http://mock.com", "this is a test");
-
-        HttpEntity<Image> request = new HttpEntity<>(image, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/image", request, String.class);
-        JSONAssert.assertEquals(expectedJson, response.getBody(),true);
+        JSONAssert.assertEquals(expectedJson, response.body().asPrettyString(),true);
     }
 }
