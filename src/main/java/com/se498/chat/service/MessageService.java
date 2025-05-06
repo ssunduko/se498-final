@@ -22,7 +22,7 @@ public class MessageService {
     @Autowired
     AIService aiService;
 
-    //TODO: Replace Fake Message Repository with Real Repository Implementation
+    //TODO: Replace Fake Image Repository with Real Repository Implementation
     @Autowired
     FakeImageRepository fakeImageRepository;
 
